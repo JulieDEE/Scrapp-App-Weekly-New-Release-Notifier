@@ -22,7 +22,12 @@ let transporter = nodemailer.createTransport({
 const fetchAndSendEmail = async () => {
     const url = process.env.SITE_URL;
 
-    const browser = await puppeteer.launch();
+    const browser = await puppeteer.launch({
+        args: [
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
+        ],
+    });
     const page = await browser.newPage();
     await page.goto(url, { waitUntil: 'networkidle0' });
 
@@ -86,10 +91,8 @@ const fetchAndSendEmail = async () => {
     transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
             console.log(error);
-            res.status(500).send("Erreur lors de l'envoi de l'e-mail.");
         } else {
             console.log('Email sent: ' + info.response);
-            res.json(books); 
         }
     });
     
